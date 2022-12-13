@@ -53,7 +53,7 @@ export class UploadFileComponent implements OnInit {
   }
 
   handleUploadFle() {
-    console.log(this.formData);
+    console.log('formData', this.formData);
     const upload$ = this.http
       .post('/api/thumbnail-upload', this.formData, {
         reportProgress: true,

@@ -6,7 +6,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
+import { UploadFileApi } from 'src/api';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,12 +20,20 @@ export class UploadFileComponent implements OnInit {
   public formGroup!: FormGroup;
   public _file!: any;
   public formData!: any;
-  uploadProgress!: any;
-  uploadSub!: Subscription;
-  total!: any;
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  public dealer!: number;
+  public id!: number;
+  constructor(
+    private fb: FormBuilder,
+    private uploadApi: UploadFileApi,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      this.dealer = Number(params.get('dealer'));
+      this.id = Number(params.get('id'));
+    });
+
     this.formGroup = this.fb.group({
       file: ['', [Validators.required]],
     });
@@ -53,23 +63,21 @@ export class UploadFileComponent implements OnInit {
   }
 
   handleUploadFle() {
-    console.log('formData', this.formData);
-    const upload$ = this.http
-      .post('/api/thumbnail-upload', this.formData, {
-        reportProgress: true,
-        observe: 'events',
-      })
-      .pipe(finalize(() => this.reset()));
-
-    this.uploadSub = upload$.subscribe((event) => {
-      if (event.type == HttpEventType.UploadProgress) {
-        this.total = event.total;
-        this.uploadProgress = Math.round(100 * (event.loaded / this.total));
+    this.uploadApi.UploadFile(this.formData).subscribe(
+      (response) => {
+        this.handleUploadFleNext(response);
+      },
+      (error) => {
+        this.handleUploadFleError(error);
       }
-    });
+    );
   }
-
-  reset() {
-    this.uploadProgress = null;
+  handleUploadFleNext(response: any) {
+    console.log(response);
+    Swal.fire('สำเร็จ', `เอกสารของท่านถูกอัพโหลดเรียบร้อย`, 'success');
+  }
+  handleUploadFleError(error: any) {
+    console.log(error);
+    Swal.fire('คำเตือน', `เอกสารของท่านถูกอัพโหลดไม่สำเร็จ`, 'error');
   }
 }

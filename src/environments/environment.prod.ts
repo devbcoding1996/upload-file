@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  baseUrl: 'https://fourinsured.com/api1/upload-file-api/controllers/main.controller.php',
+  production: true,
 };

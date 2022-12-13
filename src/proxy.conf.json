@@ -1,0 +1,7 @@
+{
+    "/api1/*": {
+        "target": "https://fourinsured.com",
+        "secure": false,
+        "changeOrigin": true
+    }
+}

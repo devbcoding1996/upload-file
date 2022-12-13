@@ -75,6 +75,11 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+              "browserTarget": "upload-file-receipt-by-dealer:build",
+              "proxyConfig": "./src/proxy.conf.json",
+              "port": 4200
+          },
           "configurations": {
             "production": {
               "browserTarget": "upload-file-receipt-by-dealer:build:production"

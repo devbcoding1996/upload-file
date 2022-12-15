@@ -20,8 +20,8 @@ export class UploadFileComponent implements OnInit {
   public formGroup!: FormGroup;
   public _file!: any;
   public formData!: any;
-  public dealer!: number;
-  public id!: number;
+  public dealer!: string;
+  public id!: string;
   constructor(
     private fb: FormBuilder,
     private uploadApi: UploadFileApi,
@@ -29,9 +29,11 @@ export class UploadFileComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
-      this.dealer = Number(params.get('dealer'));
-      this.id = Number(params.get('id'));
+
+    this.route.queryParams.subscribe((params) => {
+      console.log('paramMap',params);
+      this.dealer = params['dealer'];
+      this.id = params['id'];
     });
 
     this.formGroup = this.fb.group({
@@ -63,6 +65,9 @@ export class UploadFileComponent implements OnInit {
   }
 
   handleUploadFle() {
+    if(!this.dealer || !this.id){
+      this.handleUploadFleError('err');
+    }
     this.uploadApi.UploadFile(this.formData).subscribe(
       (response) => {
         this.handleUploadFleNext(response);

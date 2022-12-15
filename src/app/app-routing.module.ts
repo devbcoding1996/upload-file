@@ -4,11 +4,12 @@ import { UploadFileComponent } from './upload-file/upload-file.component';
 
 const routes: Routes = [
   {
-    path: 'upload-file/:dealer/:id',
+    path: '',
     component: UploadFileComponent,
+    pathMatch: 'full',
   },
   // {
-  //   path: '',
+  //   path: 'upload-file',
   //   redirectTo: '/upload-file',
   //   pathMatch: 'full',
   // },

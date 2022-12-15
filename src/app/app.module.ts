@@ -8,6 +8,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { APP_BASE_HREF } from '@angular/common';
+
 
 @NgModule({
   declarations: [AppComponent, UploadFileComponent],
@@ -21,7 +23,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     BrowserAnimationsModule,
     MatSlideToggleModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: [APP_BASE_HREF],
+      useValue: '/upload-file/',
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

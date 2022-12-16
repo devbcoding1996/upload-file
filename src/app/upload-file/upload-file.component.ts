@@ -60,13 +60,18 @@ export class UploadFileComponent implements OnInit {
         this.formData = new FormData();
         this.formData.append('controller', 'uploadFile');
         this.formData.append('thumbnail', file);
+        this.formData.append('dealerCode', this.dealer);
+        this.formData.append('comPaymentId', this.id);
       }
     }
   }
 
-  handleUploadFle() {
+  handleUploadFle(){
+    // ถ้าไม่มีข้อมูล ไม่สามารถบันทึกข้อมูลได้
     if(!this.dealer || !this.id){
+      // console.log('this.dealer',{dealer :this.dealer,id: this.id});
       this.handleUploadFleError('err');
+      return false;
     }
     this.uploadApi.UploadFile(this.formData).subscribe(
       (response) => {
@@ -83,6 +88,10 @@ export class UploadFileComponent implements OnInit {
   }
   handleUploadFleError(error: any) {
     console.log(error);
-    Swal.fire('คำเตือน', `เอกสารของท่านถูกอัพโหลดไม่สำเร็จ`, 'error');
+    Swal.fire({
+      title: 'คำเตือน',
+      icon: 'error',
+      html: `<p>เอกสารของท่านถูกอัพโหลดไม่สำเร็จ</p><p>กรุณาติดต่อเจ้าหน้าที่</p>`
+    });
   }
 }

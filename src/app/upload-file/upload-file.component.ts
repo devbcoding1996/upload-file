@@ -11,14 +11,24 @@ import { finalize, Subscription } from 'rxjs';
 import { UploadFileApi } from 'src/api';
 import Swal from 'sweetalert2';
 
+export class AlertUploadFile{
+  title: string = 'คำถาม';
+  text: string = "ต้องการอัพโหลดไฟล์ หรือ ไม่ ?";
+  icon: string = "question";
+}
+
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
   styleUrls: ['./upload-file.component.scss'],
 })
+
+
+
 export class UploadFileComponent implements OnInit {
   public formGroup!: FormGroup;
   public _file!: any;
+  public _dealerName!: any;
   public formData!: any;
   public dealer!: string;
   public id!: string;
@@ -29,7 +39,6 @@ export class UploadFileComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-
     this.route.queryParams.subscribe((params) => {
       console.log('paramMap',params);
       this.dealer = params['dealer'];
@@ -39,10 +48,28 @@ export class UploadFileComponent implements OnInit {
     this.formGroup = this.fb.group({
       file: ['', [Validators.required]],
     });
+    this.dealerName()
   }
 
   get file() {
     return this.formGroup.controls['file'];
+  }
+
+  dealerName() {
+    let formData = new FormData();
+    formData.append('controller', 'loadDealerName');
+    formData.append('dealerCode', this.dealer);
+
+    this.uploadApi.DealerName(formData).subscribe(
+      (response) => {
+        this._dealerName = response.data
+        // console.log('dealerName-success',response)
+      },
+      (error) => {
+        // this.handleUploadFleError(error);
+        console.log('dealerName-err',error)
+      }
+    );
   }
 
   uploadFile(event: any) {
@@ -64,6 +91,52 @@ export class UploadFileComponent implements OnInit {
         this.formData.append('comPaymentId', this.id);
       }
     }
+  }
+
+  handleCheckUploadFile(){
+    let formData = new FormData();
+    formData.append('controller', 'checkUploadFile');
+    formData.append('comPaymentId', this.id);
+
+    this.uploadApi.CheckUploadFile(formData).subscribe(
+      (response) => {
+        console.log('handleCheckUploadFile',response)
+        // this.handleConfirmUploadFile();
+        if(response.data.st){
+          let modelAlert = new AlertUploadFile();
+          modelAlert.title = 'คำเตือน';
+          modelAlert.text = "ต้องการอัพโหลดไฟล์อีกครั้ง หรือ ไม่ ?";
+          modelAlert.icon = "warning";
+          this.handleConfirmUploadFile(modelAlert)
+          this.formData.append('replyStatus', true);
+        }else{
+          this.handleConfirmUploadFile(new AlertUploadFile())
+        }
+      },
+      (error) => {
+        this.handleUploadFleError(error);
+        console.log('handleCheckUploadFile',error)
+
+      }
+    );
+  }
+  handleConfirmUploadFile(modelAlert: any ){
+    let resChkSendEmail = Swal.fire({
+      title: modelAlert.title,
+      icon: modelAlert.icon,
+      text: modelAlert.text,
+      inputAttributes: {
+          autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      showLoaderOnConfirm: true,
+      preConfirm: (login) => {
+        this.handleUploadFle()
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    });
   }
 
   handleUploadFle(){

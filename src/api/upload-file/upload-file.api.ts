@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, retry, throwError, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -20,6 +19,18 @@ export class UploadFileApi {
       .pipe(retry(1), catchError(this.handleError));
   }
 
+  CheckUploadFile(req: any): Observable<any> {
+    return this.http
+      .post<any>(environment.baseUrl, req)
+      .pipe(retry(1), catchError(this.handleError));
+  }
+
+  DealerName(req: any): Observable<any> {
+    return this.http
+      .post<any>(environment.baseUrl, req)
+      .pipe(retry(1), catchError(this.handleError));
+  }
+
   handleError(error: any) {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
@@ -27,7 +38,7 @@ export class UploadFileApi {
     } else {
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
-    window.alert(errorMessage);
+    // window.alert(errorMessage);
     return throwError(() => {
       return errorMessage;
     });

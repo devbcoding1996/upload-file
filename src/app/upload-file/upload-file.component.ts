@@ -30,6 +30,7 @@ export class UploadFileComponent implements OnInit {
   public _file!: any;
   public _dealerName!: any;
   public formData!: any;
+  public _checkAlertUploadFile: any = true;
   public dealer!: string;
   public id!: string;
   constructor(
@@ -49,10 +50,29 @@ export class UploadFileComponent implements OnInit {
       file: ['', [Validators.required]],
     });
     this.dealerName()
+    this.checkAlertUploadFile()
   }
 
   get file() {
     return this.formGroup.controls['file'];
+  }
+
+  checkAlertUploadFile() {
+    let formData = new FormData();
+    formData.append('controller', 'checkUploadFile');
+    formData.append('comPaymentId', this.id);
+
+    this.uploadApi.CheckUploadFile(formData).subscribe(
+      (response) => {
+        console.log('checkAlertUploadFile',response)
+        if(response.data.st){
+          this._checkAlertUploadFile = false;
+        }
+      },
+      (error) => {
+        console.log('checkAlertUploadFile',error)
+      }
+    );
   }
 
   dealerName() {
